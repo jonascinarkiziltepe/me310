@@ -2,4 +2,4 @@
 # f'(x) = 3x^2
 
 def fp(x):
-    return x*x*3
+    return 1/x

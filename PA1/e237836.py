@@ -62,33 +62,22 @@ def poly(x_l,x_u):
   x_r = 0
   i = 0
   current_error = 1000
+  x_prev = 0
   # loop start
   while i <3 or current_error > error_set :
     x_i = (x_u + x_l)/2
-    print("xi is " + str(x_i))
+ 
 
     fxl=f.f(x_l)
     fxu=f.f(x_u)
     fxi=f.f(x_i)
 
-    #poly_a = ((fxl-fxi)/((x_l-x_i)*(x_l-x_u)))+((fxi-fxu)/((x_u-x_i)*(x_l-x_u)))
-    print("fxl is " + str(fxl))
-    print(fxu)
-    print(fxi)
-    
+
+
     poly_a = ((fxl - fxi)/((x_l - x_i)*(x_l - x_u))) + ((fxi - fxu)/((x_u - x_i)*(x_l-x_u)))
     poly_b = (((fxl-fxi)*(x_i-x_u))/((x_l-x_i)*(x_l-x_u)))-(((fxi-fxu)*(x_l-x_i))/((x_u-x_i)*(x_l-x_u))) 
-    #poly_b = ()
-    print("xi is " + str(x_i))
+
     poly_c = fxi
-
-    print("Polyvars")
-    print("a = " + str(poly_a))
-    print("b = " + str(poly_b))
-    print("c = " + str(poly_c))
-
-    print("yrk " + str(poly_b*poly_b - 3*poly_a*poly_c))
-    
 
     x_r = x_i - ((2*poly_c)/(poly_b + sign(poly_b)*(math.sqrt(poly_b*poly_b - 4*poly_a*poly_c))))
 
@@ -100,7 +89,8 @@ def poly(x_l,x_u):
       x_l =x_r
     else:
       #x_r is the root
-      print(x_r + " is the root")
+      print(str(x_r) + " is the root")
+      break
     
     #to calculate error after the first iteration
     if i > 1:
@@ -110,11 +100,12 @@ def poly(x_l,x_u):
     print("Current Error " + str(current_error))
     print( "Current x_r is " + str(x_r))
     i = i+1
-    if i >= 30:
+    if i >= iteration_max:
       break
 
   print("Total iteration " + str(i))
   print("The root is " + str(x_r))
+  print(" Last Error is " + str(current_error))
 
 
 poly(x_low,x_up)
