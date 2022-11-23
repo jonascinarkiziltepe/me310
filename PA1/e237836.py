@@ -1,10 +1,10 @@
 
 #import functions
+from tkinter.filedialog import Open
+from types import NoneType
 import f as f
 import math
 import os
-
-
 
 # Structure for input.txt
 # x_low
@@ -52,7 +52,6 @@ def calculate_error (x_current, x_previous):
   return abs(E_a)
 
 
-
 # The Methods
 
 
@@ -71,7 +70,6 @@ def poly(x_l,x_u):
     fxl=f.f(x_l)
     fxu=f.f(x_u)
     fxi=f.f(x_i)
-
 
 
     poly_a = ((fxl - fxi)/((x_l - x_i)*(x_l - x_u))) + ((fxi - fxu)/((x_u - x_i)*(x_l-x_u)))
@@ -108,5 +106,89 @@ def poly(x_l,x_u):
   print(" Last Error is " + str(current_error))
 
 
-poly(x_low,x_up)
-print(os.getcwd())
+#poly(x_low,x_up)
+
+#bisection method
+def bisection(x_l,x_u):
+  x_prev = 0
+  i= 1
+  current_error = 1000
+
+  #ensure that there is a sign change between guesses
+  if x_l*x_u >= 0:
+    print("Invalid initial guess")
+    return 0
+
+  while i<30 :
+    x_r = (x_l + x_u)/2
+    fxl = f.f(x_l)
+    fxu = f.f(x_u)
+    fxr = f.f(x_r)
+    print(fxl)
+    print(fxu)
+    print(fxr)
+    print(x_r)
+
+
+    if fxl*fxr < 0:
+      x_u = x_r
+    elif fxu*fxr < 0:
+      x_l = x_r
+    elif fxr == 0:
+      print("The root is " + str(x_r))
+      break
+    else:
+      print(fxu*fxr)
+      print(fxl*fxr)
+      print("There are no single roots in the interval") 
+      break
+
+    if i > 1:
+      current_error = calculate_error(x_r,x_prev)
+    if current_error < error_set:
+      break
+
+  print("The root is " + str(x_r))
+  print("Last Error is "+ str(current_error))
+  return x_r
+  
+
+#bisection(x_low,x_up)
+
+def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutput = None ):
+
+  if i == 0: #Initialization
+    bisectionOutput = open("output_bisection.txt", "w")
+
+  if it_Max == i or it_Max < i :
+    print("Max iteration reached")
+    bisectionOutput.close() #Close output file
+    return 0 #Terminate function
+
+  i = i+1
+  
+  if sign(f.f(xl)) == sign(f.f(xu)):
+    raise Exception(" No sign change between the points ")
+  
+  xi = (xl + xu)/2
+
+  if i == 1:
+    approxError = "---"
+  else:
+    approxError = calculate_error(xi,xprev)
+    if approxError < error_Goal:
+      print("Error tolerance goal reached")
+      print("Last approx error is " + str(approxError))
+      return 0 
+
+  xprev = xi
+  #debug
+  print("xi is " + xi)
+
+  if sign(xi) == sign(xl):
+    xl = xi
+  elif sign(xi) == sign(xu):
+    xu = xi
+
+  bisectionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError))
+  new_bisection(xl,xu,it_Max,error_Goal,xprev,i,bisectionOutput)
