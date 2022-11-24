@@ -3,6 +3,7 @@
 from hashlib import new
 from tkinter.filedialog import Open
 import f as f
+import fp as fp
 import math
 import os
 
@@ -252,7 +253,6 @@ def falsePosition(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, falsePositionO
     print("fxl is " + str(fxl))
     print("xu is " + str(xu))
     print("fxu is " + str(fxu))
-    falsePositionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError) + "\n")
     falsePositionOutput.write(" No sign change between point, program terminated")
     raise Exception(" No sign change between the points ")
   
@@ -292,12 +292,71 @@ def falsePosition(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, falsePositionO
   falsePositionOutput.write(str(i) + " " + str(xr) + " " + str(fxr) + " " + str(approxError) + "\n")
 
   #Perform Recursive function call 
-  new_bisection(xl,xu,it_Max,error_Goal,xprev,i,falsePositionOutput)
+  falsePosition(xl,xu,it_Max,error_Goal,xprev,i,falsePositionOutput)
+
+
+#----------------------------
+
+#Newton-Rhapson Method
+
+def newton(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, newtonOutput = 0 ):
+
+  #Initialization, open output file
+  if i == 0: 
+    newtonOutput = open("output_newton.txt", "w")
+    #Calculate the mean of the bounds for the single guess
+    xprev = (xl + xu)/2
+
+  #Termination, close output file
+  if it_Max == i or it_Max < i :
+    print("Max iteration reached")
+    newtonOutput.close() #Close output file
+    return 0 #Terminate function
+
+  #Advance iteration
+  i = i+1
+
+  fxprev = f.f(xprev)
+  fpxprev = fp.fp(xprev)
+  if fpxprev == 0:
+    newtonOutput.write(" The derivative equals zero, program terminated")
+    raise Exception("The derivative of f equals zero")
+  #Calculate the next x
+  xnext = xprev - ((fxprev)/(fpxprev))
+  #print(xnext)
+  fxnext = f.f(xnext)
+  xr = xu - ((fxu*(xl-xu))/(fxl - fxu))
+  fxr = f.f(xr)
+
+  #Error not calculated for the first iteration
+  if i == 1:
+    approxError = "---"
+  else:#Calculate error
+    approxError = calculate_error(xnext,xprev)
+    if approxError < error_Goal: #Stop process if error goal is reached
+      print("Error tolerance goal reached")
+      print("Last approx error is " + str(approxError))
+      newtonOutput.write(str(i) + " " + str(xnext) + " " + str(fxnext) + " " + str(approxError) + "\n")
+      return 0 
+
+  #Record x with the next value
+  xprev = xnext
+
+  #Write to output file
+  newtonOutput.write(str(i) + " " + str(xr) + " " + str(fxnext) + " " + str(approxError) + "\n")
+
+  #Perform Recursive function call 
+  newton(xl,xu,it_Max,error_Goal,xprev,i,newtonOutput)
 
 
 
 
 
 
-new_bisection(x_low,x_up, iteration_max, error_set)
-falsePosition(x_low,x_up, iteration_max, error_set)
+
+
+
+
+#new_bisection(x_low,x_up, iteration_max, error_set)
+#falsePosition(x_low,x_up, iteration_max, error_set)
+#newton(x_low,x_up, iteration_max, error_set)
