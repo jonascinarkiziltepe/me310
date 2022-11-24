@@ -1,7 +1,7 @@
 
 #import functions
+from hashlib import new
 from tkinter.filedialog import Open
-from types import NoneType
 import f as f
 import math
 import os
@@ -155,7 +155,7 @@ def bisection(x_l,x_u):
 
 #bisection(x_low,x_up)
 
-def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutput = None ):
+def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutput = 0 ):
 
   if i == 0: #Initialization
     bisectionOutput = open("output_bisection.txt", "w")
@@ -168,6 +168,10 @@ def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutpu
   i = i+1
   
   if sign(f.f(xl)) == sign(f.f(xu)):
+    print("xl is " + str(xl))
+    print("fxl is " + str(f.f(xl)))
+    print("xu is " + str(xu))
+    print("fxu is " + str(f.f(xu)))
     raise Exception(" No sign change between the points ")
   
   xi = (xl + xu)/2
@@ -179,16 +183,29 @@ def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutpu
     if approxError < error_Goal:
       print("Error tolerance goal reached")
       print("Last approx error is " + str(approxError))
+      bisectionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError) + "\n")
       return 0 
 
   xprev = xi
   #debug
-  print("xi is " + xi)
+  #print("xi is " + str(xi))
+  print("xl was " + str(xl))
+  print("xu was " + str(xu))
 
-  if sign(xi) == sign(xl):
+  if sign(f.f(xi)) == sign(f.f(xl)):
     xl = xi
-  elif sign(xi) == sign(xu):
+  elif sign(f.f(xi)) == sign(f.f(xu)):
     xu = xi
 
-  bisectionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError))
+  print("xl is " + str(xl))
+  print("xu is " + str(xu))
+
+  bisectionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError) + "\n")
   new_bisection(xl,xu,it_Max,error_Goal,xprev,i,bisectionOutput)
+
+
+
+new_bisection(x_low,x_up, iteration_max, error_set)
+
+
+#yanlış yere koyuyor gibi tekrar output bak
