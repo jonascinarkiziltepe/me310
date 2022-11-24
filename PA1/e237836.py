@@ -157,55 +157,147 @@ def bisection(x_l,x_u):
 
 def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutput = 0 ):
 
-  if i == 0: #Initialization
+  #Initialization, open output file
+  if i == 0: 
     bisectionOutput = open("output_bisection.txt", "w")
 
+  #Termination, close output file
   if it_Max == i or it_Max < i :
     print("Max iteration reached")
     bisectionOutput.close() #Close output file
     return 0 #Terminate function
 
+  #Advance iteration
   i = i+1
+
+  #Store function values to decrease function evaluations
+  fxl = f.f(xl)
+  fxu = f.f(xu)
   
-  if sign(f.f(xl)) == sign(f.f(xu)):
+  #Check if the bounding input values give different sign
+  if sign(fxl) == sign(fxu):
     print("xl is " + str(xl))
-    print("fxl is " + str(f.f(xl)))
+    print("fxl is " + str(fxl))
     print("xu is " + str(xu))
-    print("fxu is " + str(f.f(xu)))
+    print("fxu is " + str(fxu))
+    bisectionOutput.write(" No sign change between point, program terminated")
     raise Exception(" No sign change between the points ")
   
+  #Calculate mid value
   xi = (xl + xu)/2
+  fxi = f.f(xi)
 
+
+  #Error not calculated for the first iteration
   if i == 1:
     approxError = "---"
-  else:
+  else:#Calculate error
     approxError = calculate_error(xi,xprev)
-    if approxError < error_Goal:
+    if approxError < error_Goal: #Stop process if error goal is reached
       print("Error tolerance goal reached")
       print("Last approx error is " + str(approxError))
-      bisectionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError) + "\n")
+      bisectionOutput.write(str(i) + " " + str(xi) + " " + str(fxi) + " " + str(approxError) + "\n")
       return 0 
 
+  #Record mid value for error calculation in the next iteration
   xprev = xi
   #debug
   #print("xi is " + str(xi))
-  print("xl was " + str(xl))
-  print("xu was " + str(xu))
+  #print("xl was " + str(xl))
+  #print("xu was " + str(xu))
 
-  if sign(f.f(xi)) == sign(f.f(xl)):
+  #Replace xi with whichever bound that gives the same sign
+  if sign(fxi) == sign(fxl):
     xl = xi
-  elif sign(f.f(xi)) == sign(f.f(xu)):
+  elif sign(fxi) == sign(fxu):
     xu = xi
 
-  print("xl is " + str(xl))
-  print("xu is " + str(xu))
+  #Debug
+  #print("xl is " + str(xl))
+  #print("xu is " + str(xu))
 
-  bisectionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError) + "\n")
+  #Write to output file
+  bisectionOutput.write(str(i) + " " + str(xi) + " " + str(fxi) + " " + str(approxError) + "\n")
+
+  #Perform Recursive function call 
   new_bisection(xl,xu,it_Max,error_Goal,xprev,i,bisectionOutput)
+
+########
+# 
+# 
+# False Position
+
+def falsePosition(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, falsePositionOutput = 0 ):
+
+  #Initialization, open output file
+  if i == 0: 
+    falsePositionOutput = open("output_falseposition.txt", "w")
+
+  #Termination, close output file
+  if it_Max == i or it_Max < i :
+    print("Max iteration reached")
+    falsePositionOutput.close() #Close output file
+    return 0 #Terminate function
+
+  #Advance iteration
+  i = i+1
+
+  #Store values to decrease the number of function calls
+  fxl = f.f(xl)
+  fxu = f.f(xu)
+  
+  #Check if the bounding input values give different sign
+  if sign(fxl) == sign(fxu):
+    print("xl is " + str(xl))
+    print("fxl is " + str(fxl))
+    print("xu is " + str(xu))
+    print("fxu is " + str(fxu))
+    falsePositionOutput.write(str(i) + " " + str(xi) + " " + str(f.f(xi)) + " " + str(approxError) + "\n")
+    falsePositionOutput.write(" No sign change between point, program terminated")
+    raise Exception(" No sign change between the points ")
+  
+  #Calculate xr
+  xr = xu - ((fxu*(xl-xu))/(fxl - fxu))
+  fxr = f.f(xr)
+
+  #Error not calculated for the first iteration
+  if i == 1:
+    approxError = "---"
+  else:#Calculate error
+    approxError = calculate_error(xr,xprev)
+    if approxError < error_Goal: #Stop process if error goal is reached
+      print("Error tolerance goal reached")
+      print("Last approx error is " + str(approxError))
+      falsePositionOutput.write(str(i) + " " + str(xr) + " " + str(f.f(xr)) + " " + str(approxError) + "\n")
+      return 0 
+
+  #Record mid value for error calculation in the next iteration
+  xprev = xr
+  #debug
+  #print("xr is " + str(xr))
+  #print("xl was " + str(xl))
+  #print("xu was " + str(xu))
+
+  #Replace xr with whichever bound that gives the same sign
+  if sign(fxr) == sign(fxl):
+    xl = xr
+  elif sign(fxr) == sign(fxu):
+    xu = xr
+
+  #Debug
+  #print("xl is " + str(xl))
+  #print("xu is " + str(xu))
+
+  #Write to output file
+  falsePositionOutput.write(str(i) + " " + str(xr) + " " + str(fxr) + " " + str(approxError) + "\n")
+
+  #Perform Recursive function call 
+  new_bisection(xl,xu,it_Max,error_Goal,xprev,i,falsePositionOutput)
+
+
+
 
 
 
 new_bisection(x_low,x_up, iteration_max, error_set)
-
-
-#yanlış yere koyuyor gibi tekrar output bak
+falsePosition(x_low,x_up, iteration_max, error_set)
