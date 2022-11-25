@@ -75,7 +75,6 @@ def poly(x_l,x_u):
 
     poly_a = ((fxl - fxi)/((x_l - x_i)*(x_l - x_u))) + ((fxi - fxu)/((x_u - x_i)*(x_l-x_u)))
     poly_b = (((fxl-fxi)*(x_i-x_u))/((x_l-x_i)*(x_l-x_u)))-(((fxi-fxu)*(x_l-x_i))/((x_u-x_i)*(x_l-x_u))) 
-
     poly_c = fxi
 
     x_r = x_i - ((2*poly_c)/(poly_b + sign(poly_b)*(math.sqrt(poly_b*poly_b - 4*poly_a*poly_c))))
@@ -164,7 +163,8 @@ def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutpu
 
   #Termination, close output file
   if it_Max == i or it_Max < i :
-    print("Max iteration reached")
+    print("Bisection Method, Max iteration reached")
+    print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(bisection_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
     bisectionOutput.close() #Close output file
     return 0 #Terminate function
 
@@ -194,9 +194,10 @@ def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutpu
     approxError = "---"
   else:#Calculate error
     approxError = calculate_error(xi,xprev)
+    bisection_Errors.append(approxError)
     if approxError < error_Goal: #Stop process if error goal is reached
-      print("Error tolerance goal reached")
-      print("Last approx error is " + str(approxError))
+      print("Bisection Method, Error tolerance goal reached")
+      print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(bisection_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
       bisectionOutput.write(str(i) + " " + str(xi) + " " + str(fxi) + " " + str(approxError) + "\n")
       return 0 
 
@@ -236,7 +237,8 @@ def falsePosition(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, falsePositionO
 
   #Termination, close output file
   if it_Max == i or it_Max < i :
-    print("Max iteration reached")
+    print("False Position Method, Max iteration reached")
+    print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(falsepos_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
     falsePositionOutput.close() #Close output file
     return 0 #Terminate function
 
@@ -265,9 +267,11 @@ def falsePosition(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, falsePositionO
     approxError = "---"
   else:#Calculate error
     approxError = calculate_error(xr,xprev)
+    #Add error to the list 
+    falsepos_Errors.append(approxError)
     if approxError < error_Goal: #Stop process if error goal is reached
-      print("Error tolerance goal reached")
-      print("Last approx error is " + str(approxError))
+      print("False Position Method, Error tolerance goal reached")
+      print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(falsepos_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
       falsePositionOutput.write(str(i) + " " + str(xr) + " " + str(f.f(xr)) + " " + str(approxError) + "\n")
       return 0 
 
@@ -309,7 +313,8 @@ def newton(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, newtonOutput = 0 ):
 
   #Termination, close output file
   if it_Max == i or it_Max < i :
-    print("Max iteration reached")
+    print("Newton Method, Max iteration reached")
+    print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(newton_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
     newtonOutput.close() #Close output file
     return 0 #Terminate function
 
@@ -325,17 +330,17 @@ def newton(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, newtonOutput = 0 ):
   xnext = xprev - ((fxprev)/(fpxprev))
   #print(xnext)
   fxnext = f.f(xnext)
-  xr = xu - ((fxu*(xl-xu))/(fxl - fxu))
-  fxr = f.f(xr)
+
 
   #Error not calculated for the first iteration
   if i == 1:
     approxError = "---"
   else:#Calculate error
     approxError = calculate_error(xnext,xprev)
+    newton_Errors.append(approxError)
     if approxError < error_Goal: #Stop process if error goal is reached
       print("Error tolerance goal reached")
-      print("Last approx error is " + str(approxError))
+      print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(newton_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
       newtonOutput.write(str(i) + " " + str(xnext) + " " + str(fxnext) + " " + str(approxError) + "\n")
       return 0 
 
@@ -343,12 +348,137 @@ def newton(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, newtonOutput = 0 ):
   xprev = xnext
 
   #Write to output file
-  newtonOutput.write(str(i) + " " + str(xr) + " " + str(fxnext) + " " + str(approxError) + "\n")
+  newtonOutput.write(str(i) + " " + str(xnext) + " " + str(fxnext) + " " + str(approxError) + "\n")
 
   #Perform Recursive function call 
   newton(xl,xu,it_Max,error_Goal,xprev,i,newtonOutput)
 
 
+#---------------------------
+#Secant Method
+
+
+def secant(xold, xolder, it_Max, error_Goal, i = 0, secantOutput = 0 ):
+
+  #Initialization, open output file
+  if i == 0: 
+    secantOutput = open("output_secant.txt", "w")
+
+  #Termination, close output file
+  if it_Max == i or it_Max < i :
+    print("Secant Method, Max iteration reached")
+    print("Last estimate= " + str(xold) + "Apprx. % Relative Err: " + str(secant_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xold)))
+    secantOutput.close() #Close output file
+    return 0 #Terminate function
+
+  #Advance iteration
+  i = i+1
+
+  fxold = f.f(xold)
+  fxolder = fp.fp(xolder)
+  if fxold == fxolder:
+    secantOutput.write(" Zero in the denominator, program terminated")
+    raise Exception("Zero in the denominator")
+  #Calculate the next x
+  xnew = xold - (((fxold)*(xolder - xold))/(fxolder - fxold))
+  #print(xnext)
+  fxnew = f.f(xnew)
+
+
+  #Error not calculated for the first iteration
+  if i == 1:
+    approxError = "---"
+  else:#Calculate error
+    approxError = calculate_error(xnew,xold)
+    secant_Errors.append(approxError)
+    if approxError < error_Goal: #Stop process if error goal is reached
+      print("Secant Method, error tolerance goal reached")
+      print("Last estimate= " + str(xold) + "Apprx. % Relative Err: " + str(secant_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xold)))
+      secantOutput.write(str(i) + " " + str(xnew) + " " + str(fxnew) + " " + str(approxError) + "\n")
+      return 0 
+
+  #Record x with the next value
+  xolder = xold
+  xold = xnew
+
+  #Write to output file
+  secantOutput.write(str(i) + " " + str(xnew) + " " + str(fxnew) + " " + str(approxError) + "\n")
+
+  #Perform Recursive function call 
+  secant(xold,xolder,it_Max,error_Goal,i,secantOutput)
+
+#-----------------------------------
+#New Poly Method
+
+def polynomial(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, polynomialOutput = 0 ):
+
+  #Initialization, open output file
+  if i == 0: 
+    polynomialOutput = open("output_polynomial.txt", "w")
+
+  #Termination, close output file
+  if it_Max == i or it_Max < i :
+    print("Polynomial Method, Max iteration reached")
+    print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(polynomial_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
+    polynomialOutput.close() #Close output file
+    return 0 #Terminate function
+
+  #Advance iteration
+  i = i+1
+  #calculate middle value
+  xi = (xu + xl)/2
+
+  #Store values to decrease the number of function calls
+  fxl = f.f(xl)
+  fxu = f.f(xu)
+  fxi = f.f(xi)
+
+  #Check if the bounding input values give different sign
+  if sign(fxl) == sign(fxu):
+    print("xl is " + str(xl))
+    print("fxl is " + str(fxl))
+    print("xu is " + str(xu))
+    print("fxu is " + str(fxu))
+    polynomialOutput.write(" No sign change between point, program terminated")
+    polynomialOutput.close()
+    raise Exception(" No sign change between the points ")
+  
+  #Calculate polynomial coefficients
+  poly_a = ((fxl - fxi)/((xl - xi)*(xl - xu))) + ((fxi - fxu)/((xu - xi)*(xl-xu)))
+  poly_b = (((fxl-fxi)*(xi-xu))/((xl-xi)*(xl-xu)))-(((fxi-fxu)*(xl-xi))/((xu-xi)*(xl-xu))) 
+  poly_c = fxi
+
+  #Using the coefficients, calculate the root of the polynomial
+  
+  xr = xi - ((2*poly_c)/(poly_b + sign(poly_b)*(math.sqrt(poly_b*poly_b - 4*poly_a*poly_c))))
+  fxr = f.f(xr)
+
+  #Error not calculated for the first iteration
+  if i == 1:
+    approxError = "---"
+  else:#Calculate error
+    approxError = calculate_error(xr,xprev)
+    polynomial_Errors.append(approxError)
+    if approxError < error_Goal: #Stop process if error goal is reached
+      print("Polynomial Method, Error tolerance goal reached")
+      print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(polynomial_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
+      polynomialOutput.write(str(i) + " " + str(xr) + " " + str(f.f(xr)) + " " + str(approxError) + "\n")
+      return 0 
+
+  #Record mid value for error calculation in the next iteration
+  xprev = xr
+
+  #Replace xr with whichever bound that gives the same sign
+  if sign(fxr) == sign(fxl):
+    xl = xr
+  elif sign(fxr) == sign(fxu):
+    xu = xr
+
+  #Write to output file
+  polynomialOutput.write(str(i) + " " + str(xr) + " " + str(fxr) + " " + str(approxError) + "\n")
+
+  #Perform Recursive function call 
+  polynomial(xl,xu,it_Max,error_Goal,xprev,i,polynomialOutput)
 
 
 
@@ -357,6 +487,9 @@ def newton(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, newtonOutput = 0 ):
 
 
 
-#new_bisection(x_low,x_up, iteration_max, error_set)
-#falsePosition(x_low,x_up, iteration_max, error_set)
-#newton(x_low,x_up, iteration_max, error_set)
+
+new_bisection(x_low,x_up, iteration_max, error_set)
+falsePosition(x_low,x_up, iteration_max, error_set)
+newton(x_low,x_up, iteration_max, error_set)
+secant(x_low,x_up, iteration_max, error_set)
+polynomial(x_low,x_up, iteration_max, error_set)
