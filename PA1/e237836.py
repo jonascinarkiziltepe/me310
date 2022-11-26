@@ -6,7 +6,7 @@ import f as f
 import fp as fp
 import math
 import os
-
+import matplotlib.pyplot as plt
 # Structure for input.txt
 # x_low
 # x_up
@@ -195,6 +195,7 @@ def new_bisection(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, bisectionOutpu
   else:#Calculate error
     approxError = calculate_error(xi,xprev)
     bisection_Errors.append(approxError)
+    bisection_Roots.append(xi)
     if approxError < error_Goal: #Stop process if error goal is reached
       print("Bisection Method, Error tolerance goal reached")
       print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(bisection_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
@@ -269,6 +270,7 @@ def falsePosition(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, falsePositionO
     approxError = calculate_error(xr,xprev)
     #Add error to the list 
     falsepos_Errors.append(approxError)
+    falsepos_Roots.append(xr)
     if approxError < error_Goal: #Stop process if error goal is reached
       print("False Position Method, Error tolerance goal reached")
       print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(falsepos_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
@@ -328,7 +330,8 @@ def newton(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, newtonOutput = 0 ):
     raise Exception("The derivative of f equals zero")
   #Calculate the next x
   xnext = xprev - ((fxprev)/(fpxprev))
-  #print(xnext)
+  print("xnext is")
+  print(xnext)
   fxnext = f.f(xnext)
 
 
@@ -338,6 +341,7 @@ def newton(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, newtonOutput = 0 ):
   else:#Calculate error
     approxError = calculate_error(xnext,xprev)
     newton_Errors.append(approxError)
+    newton_Roots.append(xnext)
     if approxError < error_Goal: #Stop process if error goal is reached
       print("Error tolerance goal reached")
       print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(newton_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
@@ -391,6 +395,7 @@ def secant(xold, xolder, it_Max, error_Goal, i = 0, secantOutput = 0 ):
   else:#Calculate error
     approxError = calculate_error(xnew,xold)
     secant_Errors.append(approxError)
+    secant_Roots.append(xnew)
     if approxError < error_Goal: #Stop process if error goal is reached
       print("Secant Method, error tolerance goal reached")
       print("Last estimate= " + str(xold) + "Apprx. % Relative Err: " + str(secant_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xold)))
@@ -459,6 +464,7 @@ def polynomial(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, polynomialOutput 
   else:#Calculate error
     approxError = calculate_error(xr,xprev)
     polynomial_Errors.append(approxError)
+    polynomial_Roots.append(xr)
     if approxError < error_Goal: #Stop process if error goal is reached
       print("Polynomial Method, Error tolerance goal reached")
       print("Last estimate= " + str(xprev) + "Apprx. % Relative Err: " + str(polynomial_Errors[-1]) + "# of iterations: " + str(i) + "f(xr) = " + str(f.f(xprev)))
@@ -482,14 +488,66 @@ def polynomial(xl, xu, it_Max, error_Goal, xprev = 500, i = 0, polynomialOutput 
 
 
 
-
-
-
-
-
-
 new_bisection(x_low,x_up, iteration_max, error_set)
 falsePosition(x_low,x_up, iteration_max, error_set)
 newton(x_low,x_up, iteration_max, error_set)
 secant(x_low,x_up, iteration_max, error_set)
 polynomial(x_low,x_up, iteration_max, error_set)
+
+#For the plots
+plt.plot(secant_Errors)
+plt.ylabel("Relative Percent Error")
+plt.xlabel("Iteration")
+plt.title("Secant Method Error Plot")
+plt.show()
+
+plt.plot(secant_Roots)
+plt.ylabel("Root")
+plt.xlabel("Iteration")
+plt.title("Secant Method Root Plot")
+plt.show()
+
+plt.plot(falsepos_Errors)
+plt.ylabel("Relative Percent Error")
+plt.xlabel("Iteration")
+plt.title("False Position Method Error Plot")
+plt.show()
+
+plt.plot(falsepos_Roots)
+plt.ylabel("Root")
+plt.xlabel("Iteration")
+plt.title("False Position Method Root Plot")
+plt.show()
+
+plt.plot(polynomial_Errors)
+plt.ylabel("Relative Percent Error")
+plt.xlabel("Iteration")
+plt.title("Polynomial Method Error Plot")
+plt.show()
+
+plt.plot(polynomial_Roots)
+plt.ylabel("Root")
+plt.xlabel("Iteration")
+plt.title("Polynomial Method Root Plot")
+plt.show()
+
+
+plt.plot(newton_Errors)
+plt.ylabel("Relative Percent Error")
+plt.xlabel("Iteration")
+plt.title("Newton Method Error Plot")
+plt.show()
+
+plt.plot(newton_Roots)
+plt.ylabel("Root")
+plt.xlabel("Iteration")
+plt.title("Newton Method Root Plot")
+plt.show()
+
+plt.plot(falsepos_Errors, label= "False Position Errors")
+plt.plot(polynomial_Errors, label= "Polynomial Errors")
+plt.ylabel("Relative percent error")
+plt.xlabel("Iteration")
+plt.title("Two Methods Error comparison")
+plt.legend()
+plt.show()
