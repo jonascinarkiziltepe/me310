@@ -495,6 +495,19 @@ secant(x_low,x_up, iteration_max, error_set)
 polynomial(x_low,x_up, iteration_max, error_set)
 
 #For the plots
+
+plt.plot(bisection_Errors)
+plt.ylabel("Relative Percent Error")
+plt.xlabel("Iteration")
+plt.title("Bisection Method Error Plot")
+plt.show()
+
+plt.plot(bisection_Roots)
+plt.ylabel("Root")
+plt.xlabel("Iteration")
+plt.title("Bisection Method Root Plot")
+plt.show()
+
 plt.plot(secant_Errors)
 plt.ylabel("Relative Percent Error")
 plt.xlabel("Iteration")
