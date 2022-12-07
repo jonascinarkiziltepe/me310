@@ -1,7 +1,7 @@
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 
-print(math.pi)
 
 #Take necesarry input values
 n = int(input("Enter the number of particles: "))
@@ -30,17 +30,6 @@ c[n-1] = 0
 d[0] = float(0.25 * math.sin(math.pi * timeInstant))
 d[n-1] = 1
 
-#Debug
-"""""
-print(" a values are: ")
-print(a)
-print(" b values are: ")
-print(b)    
-print(" c values are: ")
-print(c)
-print(" Position values are: ")
-print(d)
-"""""
 
 def gaussEliminationMethod(ag, bg, cg, dg):
 #Attention Points
@@ -85,6 +74,7 @@ def gaussEliminationMethod(ag, bg, cg, dg):
             roots[n-i-1] = dg[n-i-1] - (cg[n-i-1]*roots[n-i])
         #print("root " + str(n-1-i) + " is now: " + str(roots[n-i-1]))
 
+    
     return roots
 
 #print(gaussEliminationMethod(a,b,c,d))
@@ -105,9 +95,9 @@ def gaussSeidel (dgs, tolerance_goal, iteration_max):
     for j in range(1,dgs.size-1):
       xprev[j] = x[j]  
       x[j] = (dgs[j] - x[j-1] - x[j+1])/(-2)
-      errors[j] = (x[j] - xprev[j])/x[j] 
+      errors[j] = 100*(x[j] - xprev[j])/x[j]
     for j in range(errors.size):
-        if errors[j] < 0.0001:
+        if errors[j] < tolerance_goal:
             error_check[j] = 1
         else:
             error_check[j] = 0
@@ -115,16 +105,34 @@ def gaussSeidel (dgs, tolerance_goal, iteration_max):
     
     if error_sum >= x.size:
         print("Reached goal")
+        print("iteration number: " + str(i))
         print(errors)
         return x
           
   print("errors is")
   print(errors)
+
+
   return x
 
 
-print("Result from gauss seidel is: ")
-print(gaussSeidel(d,tolerance,maxIteration))
 
+gauss_seidel_roots = gaussSeidel(d,tolerance,maxIteration)
+print("Result from gauss seidel is: ")
+print(gauss_seidel_roots)
+plt.plot(gauss_seidel_roots, 'ro')
+plt.ylabel("Position")
+plt.xlabel("Particle Number")
+plt.title("Gauss-Seidel Plot N=5, t=1.5 ")
+plt.show()
+
+
+gauss_elim_roots = gaussEliminationMethod(a,b,c,d)
 print("Result from gauss Elimination is: ")
-print(gaussEliminationMethod(a,b,c,d))
+print(gauss_elim_roots)
+
+plt.plot(gauss_elim_roots, 'ro')
+plt.ylabel("Position")
+plt.xlabel("Particle Number")
+plt.title("Gauss Elimination Plot N=5, t=1.5 ")
+plt.show()
