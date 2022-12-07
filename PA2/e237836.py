@@ -6,7 +6,7 @@ print(math.pi)
 #Take necesarry input values
 n = int(input("Enter the number of particles: "))
 timeInstant = float(input("Enter the time instant: "))
-tolerance = int(input("Enter the tolerance to terminate: "))
+tolerance = float(input("Enter the tolerance to terminate: "))
 maxIteration = int(input("Enter the max number of iterations to terminate: "))
 
 #For Gauss Elimination We will use Thomas Algorithm to solve this special matrix, which is a tridiagonal system
@@ -89,19 +89,42 @@ def gaussEliminationMethod(ag, bg, cg, dg):
 
 #print(gaussEliminationMethod(a,b,c,d))
 
-def gaussSeidel (dgs):
+def gaussSeidel (dgs, tolerance_goal, iteration_max):
 
   x = np.copy(dgs)
+  xprev = np.copy(x)
+  errors = np.zeros(x.size)
+  error_check = np.zeros(x.size)
+  error_check[0] = 1
+  error_check[x.size - 1] = 1
+  
 
-  for i in range(maxIteration):
+  for i in range(iteration_max):
+    error_sum = 0
+    #print("Xprev = " + str(xprev))
     for j in range(1,dgs.size-1):
+      xprev[j] = x[j]  
       x[j] = (dgs[j] - x[j-1] - x[j+1])/(-2)
-
+      errors[j] = (x[j] - xprev[j])/x[j] 
+    for j in range(errors.size):
+        if errors[j] < 0.0001:
+            error_check[j] = 1
+        else:
+            error_check[j] = 0
+    error_sum = np.sum(error_check)
+    
+    if error_sum >= x.size:
+        print("Reached goal")
+        print(errors)
+        return x
+          
+  print("errors is")
+  print(errors)
   return x
 
 
 print("Result from gauss seidel is: ")
-print(gaussSeidel(d))
+print(gaussSeidel(d,tolerance,maxIteration))
 
 print("Result from gauss Elimination is: ")
 print(gaussEliminationMethod(a,b,c,d))
